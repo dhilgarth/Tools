@@ -22,10 +22,10 @@ namespace GitSvnCommitMessageEnricher
             var process = new Process();
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.FileName = "git";
-            process.StartInfo.Arguments = command + " " + args;
+            process.StartInfo.Arguments = command + " " + args.Trim();
             process.StartInfo.RedirectStandardOutput = true;
             process.Start();
-            return process.StandardOutput.ReadToEnd();
+            return process.StandardOutput.ReadToEnd().Trim();
         }
     }
 }

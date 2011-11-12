@@ -8,12 +8,12 @@ namespace GitSvnCommitMessageEnricher
     {
         private static string GetUser(string commitInfo, string userType)
         {
-            return Regex.Match(commitInfo, "^" + userType + " ([^>])*").Groups[1].Value;
+            return Regex.Match(commitInfo, @"^" + userType + " ([^>]+>)", RegexOptions.Multiline).Groups[1].Value;
         }
 
         private static DateTimeOffset GetUserDateTime(string commitInfo, string userType)
         {
-            var result = Regex.Match(commitInfo, "^" + userType + @" [^>]* ([0-9]+) (\+)([0-9]{2})([0-9]{2})");
+            var result = Regex.Match(commitInfo, "^" + userType + @" [^>]+> ([0-9]+) (\+)([0-9]{2})([0-9]{2})", RegexOptions.Multiline);
             var timestamp = int.Parse(result.Groups[1].Value);
             var dateTime = new DateTime(1970, 1, 1) + TimeSpan.FromSeconds(timestamp);
             var offsetHours = int.Parse(result.Groups[3].Value);
@@ -26,18 +26,24 @@ namespace GitSvnCommitMessageEnricher
 
         private static void Main(string[] args)
         {
-            var revision = GitWrapper.RevParse("HEAD");
-            if (GitWrapper.CatFile("-t " + revision) != "commit")
-                return;
-            var commitInfo = GitWrapper.CatFile("commit " + revision);
-            var author = GetUser(commitInfo, "author");
-            var authorDateTime = GetUserDateTime(commitInfo, "author");
-            var committer = GetUser(commitInfo, "committer");
-            var committerDateTime = GetUserDateTime(commitInfo, "committer");
-            var additionalCommitInfo = Environment.NewLine + "-------" + Environment.NewLine + "Committed by git-svn. Additional info about the commit:"
-                                       + Environment.NewLine + "Author: " + author + " @ " + authorDateTime + Environment.NewLine + "Committer: " + committer
-                                       + " @ " + committerDateTime;
-            File.AppendAllText(args[0], additionalCommitInfo);
+            try
+            {
+                var revision = GitWrapper.RevParse("HEAD");
+                if (GitWrapper.CatFile("-t " + revision) != "commit")
+                    return;
+                var commitInfo = GitWrapper.CatFile("commit " + revision);
+                var author = GetUser(commitInfo, "author");
+                var authorDateTime = GetUserDateTime(commitInfo, "author");
+                var committer = GetUser(commitInfo, "committer");
+                var committerDateTime = GetUserDateTime(commitInfo, "committer");
+                var additionalCommitInfo = Environment.NewLine + "-------" + Environment.NewLine + "Committed by git-svn. Additional info about the commit:"
+                                           + Environment.NewLine + "Author:    " + author + " @ " + authorDateTime + Environment.NewLine + "Committer: "
+                                           + committer + " @ " + committerDateTime;
+                File.AppendAllText(args[0], additionalCommitInfo);
+            }
+            catch (Exception e)
+            {
+            }
         }
     }
 }
