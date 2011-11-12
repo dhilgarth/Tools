@@ -1,0 +1,8 @@
+*.wav binary -delta
+*.zip binary -delta
+*.jpg binary -delta
+*.exe binary -delta
+*.dll binary -delta
+*.chm binary -delta
+*.psd binary -delta
+*.docx binary -delta
