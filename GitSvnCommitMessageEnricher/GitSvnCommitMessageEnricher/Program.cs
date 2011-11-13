@@ -6,11 +6,35 @@ namespace GitSvnCommitMessageEnricher
 {
     internal class Program
     {
+        /// <summary>
+        /// Gets the user in the form <c>Firstname Lastname &lt;mail@domain.com&gt;</c>.
+        /// </summary>
+        /// <param name="commitInfo">
+        /// The commit info to get the user from.
+        /// </param>
+        /// <param name="userType">
+        /// Type of the user.
+        /// </param>
+        /// <returns>
+        /// The user in the form <c>Firstname Lastname &lt;mail@domain.com&gt;</c>.
+        /// </returns>
         private static string GetUser(string commitInfo, string userType)
         {
             return Regex.Match(commitInfo, @"^" + userType + " ([^>]+>)", RegexOptions.Multiline).Groups[1].Value;
         }
 
+        /// <summary>
+        /// Gets the user date time from the commit info for the specified user type.
+        /// </summary>
+        /// <param name="commitInfo">
+        /// The commit info.
+        /// </param>
+        /// <param name="userType">
+        /// Type of the user.
+        /// </param>
+        /// <returns>
+        /// The date time of the commit for the specified user type.
+        /// </returns>
         private static DateTimeOffset GetUserDateTime(string commitInfo, string userType)
         {
             var result = Regex.Match(commitInfo, "^" + userType + @" [^>]+> ([0-9]+) (\+)([0-9]{2})([0-9]{2})", RegexOptions.Multiline);
@@ -43,6 +67,7 @@ namespace GitSvnCommitMessageEnricher
             }
             catch (Exception e)
             {
+                // Just fail silently and don't change the commit message.
             }
         }
     }
