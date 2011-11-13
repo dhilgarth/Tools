@@ -60,9 +60,8 @@ namespace GitSvnCommitMessageEnricher
                 var authorDateTime = GetUserDateTime(commitInfo, "author");
                 var committer = GetUser(commitInfo, "committer");
                 var committerDateTime = GetUserDateTime(commitInfo, "committer");
-                var additionalCommitInfo = Environment.NewLine + "-------" + Environment.NewLine + "Committed by git-svn. Additional info about the commit:"
-                                           + Environment.NewLine + "Author:    " + author + " @ " + authorDateTime + Environment.NewLine + "Committer: "
-                                           + committer + " @ " + committerDateTime;
+                var additionalCommitInfo = "\n-------\nCommitted by git-svn. Additional info about the commit:\nAuthor: " + author + " @ " + authorDateTime
+                                           + "\nCommitter: " + committer + " @ " + committerDateTime;
                 File.AppendAllText(args[0], additionalCommitInfo);
             }
             catch (Exception e)
